@@ -7,9 +7,9 @@ build-core:
    - echo %USERDOMAIN%\%USERNAME%
    - SET
    - echo %CI_PROJECT_DIR%
-   - call %CI_PROJECT_DIR%/.gitlab-scripts/init-deps-code.cmd
-   - call %CI_PROJECT_DIR%/.gitlab-scripts/build-projects-core.cmd
-   - call %CI_PROJECT_DIR%/.gitlab-scripts/test-projects-core.cmd
+   - call .gitlab-scripts/init-deps-core.cmd
+   - call .gitlab-scripts/build-projects-core.cmd
+   - call .gitlab-scripts/test-projects-core.cmd
   tags:
     - windows
 
