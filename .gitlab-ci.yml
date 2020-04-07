@@ -6,6 +6,7 @@ build:
   script:
    - echo %USERDOMAIN%\%USERNAME%
    - SET
+   - call .gitlab-scripts/init-deps.cmd
   tags:
     - windows
   
