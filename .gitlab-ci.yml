@@ -6,9 +6,9 @@ build-core:
   script:
    - echo %USERDOMAIN%\%USERNAME%
    - SET
-   - .gitlab-scripts/init-deps-code.cmd
-   - .gitlab-scripts/build-projects-core.cmd
-   - .gitlab-scripts/test-projects-core.cmd
+   - call .gitlab-scripts/init-deps-code.cmd
+   - call .gitlab-scripts/build-projects-core.cmd
+   - call .gitlab-scripts/test-projects-core.cmd
   tags:
     - windows
 
