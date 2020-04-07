@@ -1,12 +1,14 @@
 stages:
 - build
 
-build:
+build-core:
   stage: build
   script:
    - echo %USERDOMAIN%\%USERNAME%
    - SET
-   - .gitlab-scripts/init-deps.cmd
+   - .gitlab-scripts/init-deps-code.cmd
+   - .gitlab-scripts/build-projects-core.cmd
+   - .gitlab-scripts/test-projects-core.cmd
   tags:
     - windows
-  
+
