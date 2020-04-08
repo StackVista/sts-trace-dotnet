@@ -12,4 +12,18 @@ build-core:
    - call .gitlab-scripts/test-projects-core.cmd
   tags:
     - windows
+  when: manual
+
+build-native:
+  stage: build
+  script:
+   - echo %USERDOMAIN%\%USERNAME%
+   - SET
+   - echo %CI_PROJECT_DIR%
+   - call .gitlab-scripts/build-projects-native.cmd
+   - call .gitlab-scripts/test-projects-native.cmd
+  tags:
+    - windows
+
+
 
