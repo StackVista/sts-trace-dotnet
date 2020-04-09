@@ -21,7 +21,7 @@ build-native:
    - SET
    - echo %CI_PROJECT_DIR%
    - call .gitlab-scripts/build-projects-native.cmd
-#   - call .gitlab-scripts/test-projects-native.cmd
+   - call .gitlab-scripts/test-projects-native.cmd
    - call .gitlab-scripts/prepare-artifacts.cmd
   tags:
     - windows
@@ -29,3 +29,5 @@ build-native:
     expire_in: 1 week
     paths:
     - OUTCOME
+    reports:
+      junit: test/**/test*.xml
