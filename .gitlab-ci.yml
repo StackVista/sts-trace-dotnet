@@ -31,6 +31,7 @@ test-native:
   needs:
     - build-native
   script:
+   - call .gitlab-scripts/build-projects-native.cmd
    - call .gitlab-scripts/test-projects-native.cmd
   artifacts:
     expire_in: 1 week
