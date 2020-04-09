@@ -1,28 +1,37 @@
 stages:
 - build
+- test
+- package
 
 build-core:
   stage: build
   script:
-   - echo %USERDOMAIN%\%USERNAME%
-   - SET
    - echo %CI_PROJECT_DIR%
    - call .gitlab-scripts/init-deps-core.cmd
    - call .gitlab-scripts/build-projects-core.cmd
    - call .gitlab-scripts/test-projects-core.cmd
   tags:
     - windows
-  when: manual
 
 build-native:
   stage: build
   script:
-   - echo %USERDOMAIN%\%USERNAME%
-   - SET
    - echo %CI_PROJECT_DIR%
    - call .gitlab-scripts/build-projects-native.cmd
-   - call .gitlab-scripts/test-projects-native.cmd
    - call .gitlab-scripts/prepare-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
+
+test-native:
+  stage: test
+  needs:
+    - build-native
+  script:
+   - call .gitlab-scripts/test-projects-native.cmd
   tags:
     - windows
   artifacts:
@@ -33,3 +42,15 @@ build-native:
       junit:
         - test\Datadog.Trace.ClrProfiler.Native.Tests\bin\Release\x64\test*.xml
         - test\Datadog.Trace.ClrProfiler.Native.Tests\bin\Release\x86\test*.xml
+
+publish-native:
+  stage: package
+  needs:
+    - build-native
+  script:
+   - call .gitlab-scripts/package-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
