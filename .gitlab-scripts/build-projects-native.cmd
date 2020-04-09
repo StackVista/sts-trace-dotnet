@@ -4,8 +4,6 @@ dotnet build src/Datadog.Trace.ClrProfiler.Managed.Loader/Datadog.Trace.ClrProfi
 dotnet build sample-libs/Samples.ExampleLibrary/Samples.ExampleLibrary.csproj
 dotnet build sample-libs/Samples.ExampleLibraryTracer/Samples.ExampleLibraryTracer.csproj
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat"
-
 rem Restore NuGet packages
 rem nuget.exe is required for command line restore because msbuild doesn't support packages.config
 rem (see https://github.com/NuGet/Home/issues/7386)

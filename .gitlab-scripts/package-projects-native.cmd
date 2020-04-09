@@ -1,5 +1,15 @@
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat"
 
+
+rem Restore NuGet packages
+rem nuget.exe is required for command line restore because msbuild doesn't support packages.config
+rem (see https://github.com/NuGet/Home/issues/7386)
+nuget restore Datadog.Trace.sln
+
+rem Build C# projects (Platform: always AnyCPU)
+rem msbuild Datadog.Trace.proj /t:restore
+msbuild Datadog.Trace.proj /t:restore /t:BuildCsharp /p:Configuration=Release
+
 rem Build NuGet packages
 dotnet pack src\Datadog.Trace\Datadog.Trace.csproj
 dotnet pack src\Datadog.Trace.OpenTracing\Datadog.Trace.OpenTracing.csproj
