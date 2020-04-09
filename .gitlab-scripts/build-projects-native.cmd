@@ -22,8 +22,8 @@ dotnet pack src\Datadog.Trace.OpenTracing\Datadog.Trace.OpenTracing.csproj
 rem Build C++ projects
 
 rem The native profiler depends on the Datadog.Trace.ClrProfiler.Managed.Loader C# project so be sure that is built first
-msbuild Datadog.Trace.proj /t:BuildCpp;BuildCppTests /p:Configuration=Debug;Platform=x64
-msbuild Datadog.Trace.proj /t:BuildCpp;BuildCppTests /p:Configuration=Debug;Platform=x86
+msbuild Datadog.Trace.proj /t:BuildCpp;BuildCppTests /p:Configuration=Release;Platform=x64
+msbuild Datadog.Trace.proj /t:BuildCpp;BuildCppTests /p:Configuration=Release;Platform=x86
 
 rem Build MSI installer for Windows x64 (supports both x64 and x86 apps)
 msbuild Datadog.Trace.proj /t:msi /p:Configuration=Debug;Platform=x64
