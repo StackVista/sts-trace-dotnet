@@ -12,4 +12,5 @@ Datadog.Trace.ClrProfiler.Native.Tests.exe --gtest_output=xml
 popd
 
 
+
 rem testResultsFiles: test/**/test*.xml
