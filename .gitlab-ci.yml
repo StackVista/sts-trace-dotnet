@@ -30,4 +30,6 @@ build-native:
     paths:
     - OUTCOME
     reports:
-      junit: test\\**\\test*.xml
+      junit:
+        - test\\Datadog.Trace.ClrProfiler.Native.Tests\\bin\\Release\\x64\\test_*.xml
+        - test\\Datadog.Trace.ClrProfiler.Native.Tests\\bin\\Release\\x86\\test_*.xml
