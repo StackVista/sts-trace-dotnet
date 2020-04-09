@@ -32,8 +32,6 @@ test-native:
     - build-native
   script:
    - call .gitlab-scripts/test-projects-native.cmd
-  tags:
-    - windows
   artifacts:
     expire_in: 1 week
     paths:
@@ -42,6 +40,8 @@ test-native:
       junit:
         - test\Datadog.Trace.ClrProfiler.Native.Tests\bin\Release\x64\test*.xml
         - test\Datadog.Trace.ClrProfiler.Native.Tests\bin\Release\x86\test*.xml
+  tags:
+    - windows
 
 publish-native:
   stage: package
@@ -54,3 +54,5 @@ publish-native:
     expire_in: 1 week
     paths:
     - OUTCOME
+  tags:
+    - windows
