@@ -1,3 +1,4 @@
+IF EXIST OUTCOME RMDIR /S /Q OUTCOME
 mkdir OUTCOME
 mkdir OUTCOME\\WindowsInstaller\X64
 mkdir OUTCOME\\WindowsInstaller\X86
