@@ -1,0 +1,60 @@
+stages:
+- build
+- test
+- package
+
+build-core:
+  stage: build
+  script:
+   - echo %CI_PROJECT_DIR%
+   - call .gitlab-scripts/init-deps-core.cmd
+   - call .gitlab-scripts/build-projects-core.cmd
+   - call .gitlab-scripts/test-projects-core.cmd
+  tags:
+    - windows
+
+build-native:
+  stage: build
+  script:
+   - echo %CI_PROJECT_DIR%
+   - call .gitlab-scripts/build-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
+
+test-native:
+  stage: test
+  needs:
+    - build-native
+  script:
+   - call .gitlab-scripts/build-projects-native.cmd
+   - call .gitlab-scripts/test-projects-native.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+    reports:
+      junit:
+        - test\Datadog.Trace.ClrProfiler.Native.Tests\bin\Release\x64\test*.xml
+        - test\Datadog.Trace.ClrProfiler.Native.Tests\bin\Release\x86\test*.xml
+  tags:
+    - windows
+
+publish-native:
+  stage: package
+  needs:
+    - build-native
+  script:
+   - call .gitlab-scripts/package-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+   - call .gitlab-scripts/prepare-release-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
