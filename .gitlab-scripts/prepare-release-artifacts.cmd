@@ -1,10 +1,10 @@
 rem Dirty: address on c# level.
 
-pushd OUTCOME\\WindowsInstaller\X64
+pushd OUTCOME\WindowsInstaller\X64\en-us\
 ren datadog-* stackstate-*
 popd
 
-pushd OUTCOME\\WindowsInstaller\X86
+pushd OUTCOME\\WindowsInstaller\X86\en-us\
 ren datadog-* stackstate-*
 popd
 
