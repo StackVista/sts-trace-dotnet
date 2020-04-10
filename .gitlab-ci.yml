@@ -51,6 +51,7 @@ publish-native:
   script:
    - call .gitlab-scripts/package-projects-native.cmd
    - call .gitlab-scripts/prepare-artifacts.cmd
+   - call .gitlab-scripts/prepare-release-artifacts.cmd
   artifacts:
     expire_in: 1 week
     paths:
