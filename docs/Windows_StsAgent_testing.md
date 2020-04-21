@@ -56,6 +56,10 @@ You can find host machine ip with `ipconfig` command.
 
 Get latest msi `stackstate-net-apm` release from [https://github.com/StackVista/sts-trace-dotnet/releases](https://github.com/StackVista/sts-trace-dotnet/releases)
 Install it on Windows VM.
+Check if module is installed with 
+```
+C:\Windows\System32\inetsrv\appcmd.exe list modules
+```
 
 ## Run simulator on Host machine
 
