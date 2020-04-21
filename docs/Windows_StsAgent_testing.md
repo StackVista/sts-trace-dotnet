@@ -2,6 +2,7 @@
 This guide assumes we are using VirtualBox for running VM.
 Get Windows VM from [https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/](https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/])
 Run it in VirtualBox and install VirtualBox Guest OS Addons.
+Setup timezone and date format if needed.
 
 ## Install chocolatey on Windows
 Do it in PowerShell as Admin.
