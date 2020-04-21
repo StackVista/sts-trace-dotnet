@@ -5,6 +5,8 @@ Check docs on MS site for Windows VM password.
 
 + Run it in VirtualBox and install VirtualBox Guest OS Addons.
 + Setup timezone and date format if needed.
++ Do the Windows update first as it will work in the background and slow everything down.
++ Restart the VM after Windows update is finished.
 
 ## Install chocolatey on Windows
 Do it in PowerShell as Admin.
