@@ -47,7 +47,7 @@ Install StackState Agent and point it to the simulator running on host machine.
 ```
 You can find host machine ip with `ipconfig` command.
 
-## Install .NET Tracer for Datadog APM
+## Install .NET Tracer for StackState Agent
 
 Get latest msi `stackstate-net-apm` release from [https://github.com/StackVista/sts-trace-dotnet/releases](https://github.com/StackVista/sts-trace-dotnet/releases)
 Install it on Windows VM.
