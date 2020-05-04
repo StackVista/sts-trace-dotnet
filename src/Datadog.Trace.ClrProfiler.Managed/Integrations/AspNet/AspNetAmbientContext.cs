@@ -120,7 +120,6 @@ namespace Datadog.Trace.ClrProfiler.Integrations
                 catch { }
 
                 // /stspatch
-
             }
             catch (Exception ex)
             {
