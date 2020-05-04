@@ -144,8 +144,8 @@ namespace Datadog.Trace.ClrProfiler.Integrations
 
                 // stspatch
                 span.SetTag(Tags.StsHostname, host);
-                // If you are using IIS 6.0 in worker process isolation mode, the ASP.NET process model is disabled and an HttpException exception 
-                // is thrown when you access ProcessInfo members
+                // If you are using IIS 6.0 in worker process isolation mode, the ASP.NET process model is disabled
+                // and an HttpException exception is thrown when you access ProcessInfo members
                 try
                 {
                     Process currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
