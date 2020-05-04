@@ -143,7 +143,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations
                 span.SetTag(Tags.AspNetAction, actionName);
 
                 // stspatch
-                span.SetTag(Tags.StsHostname, host);
+                span.SetTag(Tags.StsHostname, HttpContext.Current.Server.MachineName);
                 // If you are using IIS 6.0 in worker process isolation mode, the ASP.NET process model is disabled
                 // and an HttpException exception is thrown when you access ProcessInfo members
                 try
