@@ -200,5 +200,20 @@ namespace Datadog.Trace
         /// The subscription id of the site instance in azure app services where the traced application is running.
         /// </summary>
         public const string AzureAppServicesSubscriptionId = "aas.subscription.id";
+
+        /// <summary>
+        /// StackState enriched - hostname of the calling process
+        /// </summary>
+        public const string StsHostname = "span.hostname";
+
+        /// <summary>
+        /// StackState enriched - pid of the calling process
+        /// </summary>
+        public const string StsPid = "span.pid";
+
+        /// <summary>
+        /// StackState enriched - starttime of the calling process
+        /// </summary>
+        public const string StsStartTime = "span.starttime";
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Datadog.Trace.ClrProfiler.Emit;
 using Datadog.Trace.ExtensionMethods;
 using Datadog.Trace.Headers;
@@ -102,6 +103,24 @@ namespace Datadog.Trace.ClrProfiler.Integrations
 
                 var analyticSampleRate = Tracer.Settings.GetIntegrationAnalyticsSampleRate(integrationName, enabledWithGlobalSetting: true);
                 span.SetMetric(Tags.Analytics, analyticSampleRate);
+
+                // stspatch
+                span.SetTag(Tags.StsHostname, host);
+                // If you are using IIS 6.0 in worker process isolation mode, the ASP.NET process model is disabled and an HttpException exception 
+                // is thrown when you access ProcessInfo members
+                try
+                {
+                    Process currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
+                    var startTime = currentProcessInfo.StartTime;
+                    TimeSpan startTimeSpan = (startTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+                    double unixTime = startTimeSpan.TotalSeconds;
+                    span.SetTag(Tags.StsPid, currentProcessInfo.Id.ToString());
+                    span.SetTag(Tags.StsStartTime, unixTime.ToString());
+                }
+                catch { }
+
+                // /stspatch
+
             }
             catch (Exception ex)
             {
