@@ -155,7 +155,11 @@ namespace Datadog.Trace.ClrProfiler.Integrations
                     span.SetTag(Tags.StsPid, currentProcessInfo.Id.ToString());
                     span.SetTag(Tags.StsStartTime, unixTime.ToString());
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "[STS] Error enriching span context in AspNetMvcIntegration");
+                    throw;
+                }
 
                 // /stspatch
 
