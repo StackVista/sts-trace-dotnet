@@ -204,6 +204,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations
             int mdToken,
             long moduleVersionPtr)
         {
+            Log.Debug("[sts] AspNetMvcIntegration - BeginInvokeAction");
             if (asyncControllerActionInvoker == null)
             {
                 throw new ArgumentNullException(nameof(asyncControllerActionInvoker));

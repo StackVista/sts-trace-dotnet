@@ -58,6 +58,7 @@ namespace Datadog.Trace.AspNet
             //         I've discovered that not letting each of these unique application objects be added, and thus
             //         the event handlers be registered within each HttpApplication object, leads to the runtime
             //         weirdness: at one point it crashed consistently for me, and later, I saw no spans at all.
+            Log.Debug("[sts] TracingHttpModule - Init");
             if (registeredEventHandlers.TryAdd(httpApplication, 1))
             {
                 _httpApplication = httpApplication;
