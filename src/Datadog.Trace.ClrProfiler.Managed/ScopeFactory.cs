@@ -62,9 +62,9 @@ namespace Datadog.Trace.ClrProfiler
                     var currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
                     var startTime = currentProcessInfo.StartTime;
                     TimeSpan startTimeSpan = (startTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
-                    long startTimeNanoSeconds = startTimeSpan.Ticks * 100;
+                    var startTimeMilliseconds = Convert.ToUInt64(Math.Truncate(startTimeSpan.TotalMilliseconds));
                     span.SetTag(Tags.StsPid, currentProcessInfo.Id.ToString());
-                    span.SetTag(Tags.StsStartTime, startTimeNanoSeconds.ToString());
+                    span.SetTag(Tags.StsStartTime, startTimeMilliseconds.ToString());
                 }
                 catch { }
 
