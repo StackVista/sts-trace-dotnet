@@ -103,27 +103,6 @@ namespace Datadog.Trace.ClrProfiler.Integrations
 
                 var analyticSampleRate = Tracer.Settings.GetIntegrationAnalyticsSampleRate(integrationName, enabledWithGlobalSetting: true);
                 span.SetMetric(Tags.Analytics, analyticSampleRate);
-
-                // stspatch
-                try
-                {
-                    span.SetTag(Tags.StsHostname, host);
-                    // If you are using IIS 6.0 in worker process isolation mode, the ASP.NET process model is disabled and an HttpException exception
-                    // is thrown when you access ProcessInfo members
-                    Process currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
-                    var startTime = currentProcessInfo.StartTime;
-                    TimeSpan startTimeSpan = (startTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
-                    var startTimeMilliseconds = Convert.ToUInt64(Math.Truncate(startTimeSpan.TotalMilliseconds));
-                    span.SetTag(Tags.StsPid, currentProcessInfo.Id.ToString());
-                    span.SetTag(Tags.StsStartTime, startTimeMilliseconds.ToString());
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "[STS] Error enriching span context in AspNetAmbientContext");
-                    throw;
-                }
-
-                // /stspatch
             }
             catch (Exception ex)
             {

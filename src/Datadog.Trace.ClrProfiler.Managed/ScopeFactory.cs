@@ -56,19 +56,6 @@ namespace Datadog.Trace.ClrProfiler
                 // set analytics sample rate if enabled
                 var analyticsSampleRate = tracer.Settings.GetIntegrationAnalyticsSampleRate(integrationName, enabledWithGlobalSetting: false);
                 span.SetMetric(Tags.Analytics, analyticsSampleRate);
-                // stspatch
-                try
-                {
-                    var currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
-                    var startTime = currentProcessInfo.StartTime;
-                    TimeSpan startTimeSpan = (startTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
-                    var startTimeMilliseconds = Convert.ToUInt64(Math.Truncate(startTimeSpan.TotalMilliseconds));
-                    span.SetTag(Tags.StsPid, currentProcessInfo.Id.ToString());
-                    span.SetTag(Tags.StsStartTime, startTimeMilliseconds.ToString());
-                }
-                catch { }
-
-                // /stspatch
             }
             catch (Exception ex)
             {

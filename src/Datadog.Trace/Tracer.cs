@@ -335,6 +335,31 @@ namespace Datadog.Trace
                 span.SetTag(Tags.Env, env);
             }
 
+            // stspatch
+
+            Process currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
+
+            var processStartTime = currentProcessInfo.StartTime;
+
+            if (!Settings.GlobalTags.ContainsKey("span.starttime"))
+            {
+                TimeSpan processStartTimeSpan = (processStartTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+                var startTimeMilliseconds = Convert.ToUInt64(Math.Truncate(processStartTimeSpan.TotalMilliseconds));
+                Settings.GlobalTags.Add("span.starttime", startTimeMilliseconds.ToString());
+            }
+
+            if (!Settings.GlobalTags.ContainsKey("span.pid"))
+            {
+                Settings.GlobalTags.Add("span.pid", currentProcessInfo.Id.ToString());
+            }
+
+            if (!Settings.GlobalTags.ContainsKey("span.hostname") && !string.IsNullOrEmpty(Environment.MachineName))
+            {
+                Settings.GlobalTags.Add("span.hostname", Environment.MachineName);
+            }
+
+            // /stspatch
+
             // Apply any global tags
             if (Settings.GlobalTags.Count > 0)
             {
