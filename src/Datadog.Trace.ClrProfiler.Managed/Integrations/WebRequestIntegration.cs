@@ -40,6 +40,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations
             TargetMaximumVersion = Major4)]
         public static object GetResponse(object webRequest, int opCode, int mdToken, long moduleVersionPtr)
         {
+            Log.Debug("[sts] WebRequestIntegration - GetResponse");
             if (webRequest == null)
             {
                 throw new ArgumentNullException(nameof(webRequest));

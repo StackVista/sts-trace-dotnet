@@ -144,11 +144,11 @@ namespace Datadog.Trace.ClrProfiler.Integrations
                 // set analytics sample rate if enabled
                 var analyticsSampleRate = tracer.Settings.GetIntegrationAnalyticsSampleRate(IntegrationName, enabledWithGlobalSetting: true);
                 span.SetMetric(Tags.Analytics, analyticsSampleRate);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error creating or populating scope.");
-            }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error creating or populating scope.");
+                }
 
             return scope;
         }
@@ -182,6 +182,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations
             int mdToken,
             long moduleVersionPtr)
         {
+            Log.Debug("[sts] AspNetMvcIntegration - BeginInvokeAction");
             if (asyncControllerActionInvoker == null)
             {
                 throw new ArgumentNullException(nameof(asyncControllerActionInvoker));
