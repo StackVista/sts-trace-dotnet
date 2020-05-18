@@ -1,21 +1,21 @@
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat"
 
+rem Restore NuGet packages
+rem nuget.exe is required for command line restore because msbuild doesn't support packages.config
+rem (see https://github.com/NuGet/Home/issues/7386)
+dotnet restore Datadog.Trace.sln
+
 dotnet build src/Datadog.Trace.ClrProfiler.Managed.Loader/Datadog.Trace.ClrProfiler.Managed.Loader.csproj
 dotnet build sample-libs/Samples.ExampleLibrary/Samples.ExampleLibrary.csproj
 dotnet build sample-libs/Samples.ExampleLibraryTracer/Samples.ExampleLibraryTracer.csproj
 
-rem Restore NuGet packages
-rem nuget.exe is required for command line restore because msbuild doesn't support packages.config
-rem (see https://github.com/NuGet/Home/issues/7386)
-nuget restore Datadog.Trace.sln
-
 rem Build C# projects (Platform: always AnyCPU)
 rem msbuild Datadog.Trace.proj /t:restore
-msbuild Datadog.Trace.proj /t:restore /t:BuildCsharp /p:Configuration=Debug
+msbuild Datadog.Trace.proj /t:BuildCsharp /p:Configuration=Debug
 
 rem Build NuGet packages
-dotnet pack src\Datadog.Trace\Datadog.Trace.csproj
-dotnet pack src\Datadog.Trace.OpenTracing\Datadog.Trace.OpenTracing.csproj
+dotnet pack src\Datadog.Trace\Datadog.Trace.csproj --no-build
+dotnet pack src\Datadog.Trace.OpenTracing\Datadog.Trace.OpenTracing.csproj --no-build
 
 rem Build C++ projects
 
