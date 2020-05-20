@@ -150,7 +150,7 @@ namespace Datadog.Trace
             // LibLog logging context when a scope is activated/closed
             if (Settings.LogsInjectionEnabled)
             {
-                InitializeLibLogScopeEventSubscriber(_scopeManager);
+                InitializeLibLogScopeEventSubscriber(_scopeManager, DefaultServiceName, Settings.ServiceVersion, Settings.Environment);
             }
         }
 
@@ -327,14 +327,6 @@ namespace Datadog.Trace
                 OperationName = operationName,
             };
 
-            var env = Settings.Environment;
-
-            // automatically add the "env" tag if defined
-            if (!string.IsNullOrWhiteSpace(env))
-            {
-                span.SetTag(Tags.Env, env);
-            }
-
             // stspatch
 
             Process currentProcessInfo = System.Diagnostics.Process.GetCurrentProcess();
@@ -367,6 +359,20 @@ namespace Datadog.Trace
                 {
                     span.SetTag(entry.Key, entry.Value);
                 }
+            }
+
+            // automatically add the "env" tag if defined, taking precedence over an "env" tag set from a global tag
+            var env = Settings.Environment;
+            if (!string.IsNullOrWhiteSpace(env))
+            {
+                span.SetTag(Tags.Env, env);
+            }
+
+            // automatically add the "version" tag if defined, taking precedence over an "version" tag set from a global tag
+            var version = Settings.ServiceVersion;
+            if (!string.IsNullOrWhiteSpace(version) && string.Equals(finalServiceName, DefaultServiceName))
+            {
+                span.SetTag(Tags.Version, version);
             }
 
             traceContext.AddSpan(span);
@@ -465,24 +471,42 @@ namespace Datadog.Trace
 
         private static IStatsd CreateDogStatsdClient(TracerSettings settings, string serviceName, int port)
         {
-            var frameworkDescription = FrameworkDescription.Create();
-
-            string[] constantTags =
+            try
             {
-                "lang:.NET",
-                $"lang_interpreter:{frameworkDescription.Name}",
-                $"lang_version:{frameworkDescription.ProductVersion}",
-                $"tracer_version:{TracerConstants.AssemblyVersion}",
-                $"service_name:{serviceName}"
-            };
+                var frameworkDescription = FrameworkDescription.Create();
 
-            var statsdUdp = new StatsdUDP(settings.AgentUri.DnsSafeHost, port, StatsdConfig.DefaultStatsdMaxUDPPacketSize);
-            return new Statsd(statsdUdp, new RandomGenerator(), new StopWatchFactory(), prefix: string.Empty, constantTags);
+                var constantTags = new List<string>
+                                   {
+                                       "lang:.NET",
+                                       $"lang_interpreter:{frameworkDescription.Name}",
+                                       $"lang_version:{frameworkDescription.ProductVersion}",
+                                       $"tracer_version:{TracerConstants.AssemblyVersion}",
+                                       $"service:{serviceName}"
+                                   };
+
+                if (settings.Environment != null)
+                {
+                    constantTags.Add($"env:{settings.Environment}");
+                }
+
+                if (settings.Environment != null)
+                {
+                    constantTags.Add($"version:{settings.ServiceVersion}");
+                }
+
+                var statsdUdp = new StatsdUDP(settings.AgentUri.DnsSafeHost, port, StatsdConfig.DefaultStatsdMaxUDPPacketSize);
+                return new Statsd(statsdUdp, new RandomGenerator(), new StopWatchFactory(), prefix: string.Empty, constantTags.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Unable to instantiate {nameof(Statsd)} client.");
+                return new NoOpStatsd();
+            }
         }
 
-        private void InitializeLibLogScopeEventSubscriber(IScopeManager scopeManager)
+        private void InitializeLibLogScopeEventSubscriber(IScopeManager scopeManager, string defaultServiceName, string version, string env)
         {
-            new LibLogScopeEventSubscriber(scopeManager);
+            new LibLogScopeEventSubscriber(scopeManager, defaultServiceName, version ?? string.Empty, env ?? string.Empty);
         }
 
         private void CurrentDomain_ProcessExit(object sender, EventArgs e)

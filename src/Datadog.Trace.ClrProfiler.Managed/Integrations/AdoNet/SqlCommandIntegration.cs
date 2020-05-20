@@ -19,7 +19,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
         private const string SqlCommandTypeName = "System.Data.SqlClient.SqlCommand";
         private const string SqlDataReaderTypeName = "System.Data.SqlClient.SqlDataReader";
 
-        private static readonly ILog Log = LogProvider.GetCurrentClassLogger();
+        private static readonly Vendors.Serilog.ILogger Log = DatadogLogging.GetLogger(typeof(SqlCommandIntegration));
 
         /// <summary>
         /// Instrumentation wrapper for SqlCommand.ExecuteReader().
@@ -57,7 +57,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteReader}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteReader}(...)");
                 throw;
             }
 
@@ -115,7 +115,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteReader}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteReader}(...)");
                 throw;
             }
 
@@ -138,7 +138,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
         /// </summary>
         /// <param name="command">The object referenced by this in the instrumented method.</param>
         /// <param name="behavior">The <see cref="CommandBehavior"/> value used in the original method call.</param>
-        /// <param name="cancellationTokenSource">The <see cref="CancellationToken"/> value used in the original method call.</param>
+        /// <param name="boxedCancellationToken">The <see cref="CancellationToken"/> value used in the original method call.</param>
         /// <param name="opCode">The OpCode used in the original method call.</param>
         /// <param name="mdToken">The mdToken of the original method call.</param>
         /// <param name="moduleVersionPtr">A pointer to the module version GUID.</param>
@@ -152,13 +152,12 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
         public static object ExecuteReaderAsync(
             object command,
             int behavior,
-            object cancellationTokenSource,
+            object boxedCancellationToken,
             int opCode,
             int mdToken,
             long moduleVersionPtr)
         {
-            var tokenSource = cancellationTokenSource as CancellationTokenSource;
-            var cancellationToken = tokenSource?.Token ?? CancellationToken.None;
+            var cancellationToken = (CancellationToken)boxedCancellationToken;
 
             return ExecuteReaderAsyncInternal(
                 (DbCommand)command,
@@ -193,7 +192,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteReaderAsync}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteReaderAsync}(...)");
                 throw;
             }
 
@@ -246,7 +245,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteNonQuery}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteNonQuery}(...)");
                 throw;
             }
 
@@ -270,7 +269,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
         /// Instrumentation wrapper for SqlCommand.ExecuteNonQueryAsync().
         /// </summary>
         /// <param name="command">The object referenced by this in the instrumented method.</param>
-        /// <param name="cancellationTokenSource">The <see cref="CancellationToken"/> value used in the original method call.</param>
+        /// <param name="boxedCancellationToken">The <see cref="CancellationToken"/> value used in the original method call.</param>
         /// <param name="opCode">The OpCode used in the original method call.</param>
         /// <param name="mdToken">The mdToken of the original method call.</param>
         /// <param name="moduleVersionPtr">A pointer to the module version GUID.</param>
@@ -283,13 +282,12 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             TargetMaximumVersion = Major4)]
         public static object ExecuteNonQueryAsync(
             object command,
-            object cancellationTokenSource,
+            object boxedCancellationToken,
             int opCode,
             int mdToken,
             long moduleVersionPtr)
         {
-            var tokenSource = cancellationTokenSource as CancellationTokenSource;
-            var cancellationToken = tokenSource?.Token ?? CancellationToken.None;
+            var cancellationToken = (CancellationToken)boxedCancellationToken;
 
             return ExecuteNonQueryAsyncInternal(
                 command as DbCommand,
@@ -322,7 +320,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteNonQueryAsync}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteNonQueryAsync}(...)");
                 throw;
             }
 
@@ -375,7 +373,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteScalar}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteScalar}(...)");
                 throw;
             }
 
@@ -399,7 +397,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
         /// Instrumentation wrapper for SqlCommand.ExecuteScalarAsync().
         /// </summary>
         /// <param name="command">The object referenced by this in the instrumented method.</param>
-        /// <param name="cancellationTokenSource">The <see cref="CancellationToken"/> value used in the original method call.</param>
+        /// <param name="boxedCancellationToken">The <see cref="CancellationToken"/> value used in the original method call.</param>
         /// <param name="opCode">The OpCode used in the original method call.</param>
         /// <param name="mdToken">The mdToken of the original method call.</param>
         /// <param name="moduleVersionPtr">A pointer to the module version GUID.</param>
@@ -412,13 +410,12 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             TargetMaximumVersion = Major4)]
         public static object ExecuteScalarAsync(
             object command,
-            object cancellationTokenSource,
+            object boxedCancellationToken,
             int opCode,
             int mdToken,
             long moduleVersionPtr)
         {
-            var tokenSource = cancellationTokenSource as CancellationTokenSource;
-            var cancellationToken = tokenSource?.Token ?? CancellationToken.None;
+            var cancellationToken = (CancellationToken)boxedCancellationToken;
 
             return ExecuteScalarAsyncInternal(
                 command as DbCommand,
@@ -451,7 +448,7 @@ namespace Datadog.Trace.ClrProfiler.Integrations.AdoNet
             }
             catch (Exception ex)
             {
-                Log.ErrorException($"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteScalarAsync}(...)", ex);
+                Log.Error(ex, $"Error resolving {SqlCommandTypeName}.{AdoNetConstants.MethodNames.ExecuteScalarAsync}(...)");
                 throw;
             }
 

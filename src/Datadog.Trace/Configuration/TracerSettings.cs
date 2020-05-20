@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Datadog.Trace.Sampling;
+using Datadog.Trace.Util;
 
 namespace Datadog.Trace.Configuration
 {
@@ -38,7 +39,11 @@ namespace Datadog.Trace.Configuration
         {
             Environment = source?.GetString(ConfigurationKeys.Environment);
 
-            ServiceName = source?.GetString(ConfigurationKeys.ServiceName);
+            ServiceName = source?.GetString(ConfigurationKeys.ServiceName) ??
+                          // backwards compatibility for names used in the past
+                          source?.GetString("DD_SERVICE_NAME");
+
+            ServiceVersion = source?.GetString(ConfigurationKeys.ServiceVersion);
 
             TraceEnabled = source?.GetBool(ConfigurationKeys.TraceEnabled) ??
                            // default value
@@ -94,8 +99,14 @@ namespace Datadog.Trace.Configuration
             Integrations = new IntegrationSettingsCollection(source);
 
             GlobalTags = source?.GetDictionary(ConfigurationKeys.GlobalTags) ??
+                         // backwards compatibility for names used in the past
+                         source?.GetDictionary("DD_TRACE_GLOBAL_TAGS") ??
                          // default value (empty)
                          new ConcurrentDictionary<string, string>();
+
+            // Filter out tags with empty keys or empty values
+            GlobalTags = GlobalTags.Where(kvp => !string.IsNullOrEmpty(kvp.Key) && !string.IsNullOrEmpty(kvp.Value))
+                                   .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             DogStatsdPort = source?.GetInt32(ConfigurationKeys.DogStatsdPort) ??
                             // default value
@@ -125,6 +136,12 @@ namespace Datadog.Trace.Configuration
         /// </summary>
         /// <seealso cref="ConfigurationKeys.ServiceName"/>
         public string ServiceName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version tag applied to all spans.
+        /// </summary>
+        /// <seealso cref="ConfigurationKeys.ServiceVersion"/>
+        public string ServiceVersion { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether tracing is enabled.
@@ -244,8 +261,24 @@ namespace Datadog.Trace.Configuration
 
         internal bool IsIntegrationEnabled(string name)
         {
-            bool disabled = Integrations[name].Enabled == false || DisabledIntegrationNames.Contains(name);
-            return TraceEnabled && !disabled;
+            if (TraceEnabled && !DomainMetadata.ShouldAvoidAppDomain())
+            {
+                bool disabled = Integrations[name].Enabled == false || DisabledIntegrationNames.Contains(name);
+                return !disabled;
+            }
+
+            return false;
+        }
+
+        internal bool IsOptInIntegrationEnabled(string name)
+        {
+            if (TraceEnabled && !DomainMetadata.ShouldAvoidAppDomain())
+            {
+                var disabled = Integrations[name].Enabled != true || DisabledIntegrationNames.Contains(name);
+                return !disabled;
+            }
+
+            return false;
         }
 
         internal double? GetIntegrationAnalyticsSampleRate(string name, bool enabledWithGlobalSetting)

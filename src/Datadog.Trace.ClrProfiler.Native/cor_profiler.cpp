@@ -15,6 +15,7 @@
 #include "metadata_builder.h"
 #include "module_metadata.h"
 #include "pal.h"
+#include "sig_helpers.h"
 #include "resource.h"
 #include "util.h"
 
@@ -89,6 +90,7 @@ CorProfiler::Initialize(IUnknown* cor_profiler_info_unknown) {
                      environment::agent_port,
                      environment::env,
                      environment::service_name,
+                     environment::service_version,
                      environment::disabled_integrations,
                      environment::clr_disable_optimizations,
                      environment::domain_neutral_instrumentation,
@@ -315,6 +317,17 @@ HRESULT STDMETHODCALLTYPE CorProfiler::ModuleLoadFinished(ModuleID module_id,
     return S_OK;
   }
 
+  // In IIS, the startup hook will be inserted into a method in System.Web (which is domain-neutral)
+  // but the Datadog.Trace.ClrProfiler.Managed.Loader assembly that the startup hook loads from a
+  // byte array will be loaded into a non-shared AppDomain.
+  // In this case, do not insert another startup hook into that non-shared AppDomain
+  if (module_info.assembly.name == "Datadog.Trace.ClrProfiler.Managed.Loader"_W) {
+    Info("ModuleLoadFinished: Datadog.Trace.ClrProfiler.Managed.Loader loaded into AppDomain ",
+          app_domain_id, " ", module_info.assembly.app_domain_name);
+    first_jit_compilation_app_domains.insert(app_domain_id);
+    return S_OK;
+  }
+
   if (module_info.IsWindowsRuntime()) {
     // We cannot obtain writable metadata interfaces on Windows Runtime modules
     // or instrument their IL.
@@ -329,15 +342,19 @@ HRESULT STDMETHODCALLTYPE CorProfiler::ModuleLoadFinished(ModuleID module_id,
       "mscorlib"_W,
       "netstandard"_W,
       "Datadog.Trace"_W,
+      "Datadog.Trace.AspNet"_W,
       "Datadog.Trace.ClrProfiler.Managed"_W,
-      "MsgPack"_W,
-      "MsgPack.Serialization.EmittingSerializers.GeneratedSerealizers0"_W,
-      "MsgPack.Serialization.EmittingSerializers.GeneratedSerealizers1"_W,
-      "MsgPack.Serialization.EmittingSerializers.GeneratedSerealizers2"_W,
+      "Datadog.Trace.ClrProfiler.Managed.Core"_W,
+      "Datadog.Trace.ClrProfiler.Managed.Loader"_W,
+      "MessagePack"_W,
+      "MessagePack.Resolvers.DynamicEnumResolver"_W,
+      "MessagePack.Resolvers.DynamicObjectResolver"_W,
+      "MessagePack.Resolvers.DynamicUnionResolver"_W,
       "Sigil"_W,
       "Sigil.Emit.DynamicAssembly"_W,
       "System.Core"_W,
       "System.Runtime"_W,
+      "System.Runtime.Caching"_W,
       "System.IO.FileSystem"_W,
       "System.Collections"_W,
       "System.Runtime.Extensions"_W,
@@ -350,10 +367,12 @@ HRESULT STDMETHODCALLTYPE CorProfiler::ModuleLoadFinished(ModuleID module_id,
       "Microsoft.Extensions.Options"_W,
       "Microsoft.Extensions.ObjectPool"_W,
       "System.Configuration"_W,
+      "System.Xml"_W,
       "System.Xml.Linq"_W,
       "Microsoft.AspNetCore.Razor.Language"_W,
       "Microsoft.AspNetCore.Mvc.RazorPages"_W,
       "Microsoft.CSharp"_W,
+      "Microsoft.Build.Utilities.v4.0"_W,
       "Newtonsoft.Json"_W,
       "Anonymously Hosted DynamicMethods Assembly"_W,
       "ISymWrapper"_W};
@@ -503,7 +522,11 @@ HRESULT STDMETHODCALLTYPE CorProfiler::JITCompilationStarted(
 
   HRESULT hr = this->info_->GetFunctionInfo(function_id, nullptr, &module_id,
                                             &function_token);
-  RETURN_OK_IF_FAILED(hr);
+
+  if (FAILED(hr)) {
+    Warn("JITCompilationStarted: Call to ICorProfilerInfo3.GetFunctionInfo() failed for ", function_id);
+    return S_OK;
+  }
 
   // Verify that we have the metadata for this module
   ModuleMetadata* module_metadata = nullptr;
@@ -518,7 +541,7 @@ HRESULT STDMETHODCALLTYPE CorProfiler::JITCompilationStarted(
   }
 
   // get function info
-  auto caller =
+  const auto caller =
       GetFunctionInfo(module_metadata->metadata_import, function_token);
   if (!caller.IsValid()) {
     return S_OK;
@@ -530,16 +553,40 @@ HRESULT STDMETHODCALLTYPE CorProfiler::JITCompilationStarted(
           caller.name, "()");
   }
 
+  // IIS: Ensure that the startup hook is inserted into System.Web.Compilation.BuildManager.InvokePreStartInitMethods.
+  // This will be the first call-site considered for the startup hook injection,
+  // which correctly loads Datadog.Trace.ClrProfiler.Managed.Loader into the application's
+  // own AppDomain because at this point in the code path, the ApplicationImpersonationContext
+  // has been started.
+  auto valid_startup_hook_callsite = true;
+  if (module_metadata->assemblyName == "System"_W ||
+     (module_metadata->assemblyName == "System.Web"_W && !(caller.type.name == "System.Web.Compilation.BuildManager"_W && caller.name == "InvokePreStartInitMethods"_W))) {
+    valid_startup_hook_callsite = false;
+  }
+
   // The first time a method is JIT compiled in an AppDomain, insert our startup
   // hook which, at a minimum, must add an AssemblyResolve event so we can find
   // Datadog.Trace.ClrProfiler.Managed.dll and its dependencies on-disk since it
   // is no longer provided in a NuGet package
-  if (first_jit_compilation_app_domains.find(module_metadata->app_domain_id) ==
+  if (valid_startup_hook_callsite &&
+      first_jit_compilation_app_domains.find(module_metadata->app_domain_id) ==
       first_jit_compilation_app_domains.end()) {
+    bool domain_neutral_assembly = runtime_information_.is_desktop() && corlib_module_loaded && module_metadata->app_domain_id == corlib_app_domain_id;
+    Info("JITCompilationStarted: Startup hook registered in function_id=", function_id,
+          " token=", function_token, " name=", caller.type.name, ".",
+          caller.name, "(), assembly_name=", module_metadata->assemblyName,
+          " app_domain_id=", module_metadata->app_domain_id,
+          " domain_neutral=", domain_neutral_assembly);
+
     first_jit_compilation_app_domains.insert(module_metadata->app_domain_id);
+
     hr = RunILStartupHook(module_metadata->metadata_emit, module_id,
                           function_token);
-    RETURN_OK_IF_FAILED(hr);
+
+    if (FAILED(hr)) {
+      Warn("JITCompilationStarted: Call to RunILStartupHook() failed for ", module_id, " ", function_token);
+      return S_OK;
+    }
   }
 
   // we don't actually need to instrument anything in
@@ -550,7 +597,7 @@ HRESULT STDMETHODCALLTYPE CorProfiler::JITCompilationStarted(
   }
 
   // Get valid method replacements for this caller method
-  auto method_replacements =
+  const auto method_replacements =
       module_metadata->GetMethodReplacementsForCaller(caller);
   if (method_replacements.empty()) {
     return S_OK;
@@ -563,16 +610,24 @@ HRESULT STDMETHODCALLTYPE CorProfiler::JITCompilationStarted(
                              function_token,
                              caller,
                              method_replacements);
-  RETURN_OK_IF_FAILED(hr);
+
+  if (FAILED(hr)) {
+    Warn("JITCompilationStarted: Call to ProcessInsertionCalls() failed for ", function_id, " ", module_id, " ", function_token);
+    return S_OK;
+  }
 
   // Perform method replacement calls
   hr = ProcessReplacementCalls(module_metadata,
-                             function_id,
-                             module_id,
-                             function_token,
-                             caller,
-                             method_replacements);
-  RETURN_OK_IF_FAILED(hr);
+                               function_id,
+                               module_id,
+                               function_token,
+                               caller,
+                               method_replacements);
+
+  if (FAILED(hr)) {
+    Warn("JITCompilationStarted: Call to ProcessReplacementCalls() failed for ", function_id, " ", module_id, " ", function_token);
+    return S_OK;
+  }
 
   return S_OK;
 }
@@ -591,9 +646,12 @@ HRESULT CorProfiler::ProcessReplacementCalls(
     const std::vector<MethodReplacement> method_replacements) {
   ILRewriter rewriter(this->info_, nullptr, module_id, function_token);
   bool modified = false;
-
   auto hr = rewriter.Import();
-  RETURN_OK_IF_FAILED(hr);
+
+  if (FAILED(hr)) {
+    Warn("ProcessReplacementCalls: Call to ILRewriter.Import() failed for ", module_id, " ", function_token);
+    return hr;
+  }
 
   // Perform method call replacements
   for (auto& method_replacement : method_replacements) {
@@ -698,7 +756,6 @@ HRESULT CorProfiler::ProcessReplacementCalls(
           " name=", caller.type.name, ".", caller.name, "()");
         continue;
       }
-      
 
       auto method_def_md_token = target.id;
 
@@ -820,31 +877,96 @@ HRESULT CorProfiler::ProcessReplacementCalls(
       const auto original_argument = pInstr->m_Arg32;
       const void* module_version_id_ptr = &module_metadata->module_version_id;
 
-      // insert the opcode and signature token as
-      // additional arguments for the wrapper method
-      //
-      // IMPORTANT: Conditional branches may jump to this call instruction, so
-      // we cannot add the argument-loading instructions BEFORE this instruction,
-      // otherwise this will surface in an InvalidProgramException.
-      // Either begin loading the additional arguments starting with this ILInstr
-      // structure or make the current ILInstr a no-op and do all of the argument
-      // loading after this instruction.
+      // Begin IL Modification
       ILRewriterWrapper rewriter_wrapper(&rewriter);
       rewriter_wrapper.SetILPosition(pInstr);
+
+      // IL Modification #1: Replace original method call with a NOP, so that all original
+      //                     jump targets resolve correctly and we correctly populate the
+      //                     stack with additional arguments
+      //
+      // IMPORTANT: Conditional branches may jump to the original call instruction which
+      // resulted in the InvalidProgramException seen in
+      // https://github.com/DataDog/dd-trace-dotnet/pull/542. To avoid this, we'll do
+      // the rest of our IL modifications AFTER this instruction.
       auto original_methodcall_opcode = pInstr->m_opcode;
       pInstr->m_opcode = CEE_NOP;
+      pInstr = pInstr->m_pNext;
+      rewriter_wrapper.SetILPosition(pInstr);
 
-      // replace with a non-virtual call (CALL) to the instrumentation wrapper
-      // always use CALL because the wrappers methods are all static
-      rewriter_wrapper.CallMemberAfter(wrapper_method_ref, false);
-      rewriter_wrapper.SetILPosition(pInstr->m_pNext);
+      // IL Modification #2: Conditionally box System.Threading.CancellationToken
+      //                     if it is the last argument in the target method.
+      //
+      // If the last argument in the method signature is of the type
+      // System.Threading.CancellationToken (a struct) then box it before calling our
+      // integration method. This resolves https://github.com/DataDog/dd-trace-dotnet/issues/662,
+      // in which we did not box the System.Threading.CancellationToken object, even though the
+      // wrapper method expects an object. In that issue we observed some strange CLR behavior
+      // when the target method was in System.Data and the environment was 32-bit .NET Framework:
+      // the CLR swapped the values of the CancellationToken argument and the opCode argument.
+      // For example, the VIRTCALL opCode is '0x6F' and this value would be placed at the memory
+      // location assigned to the CancellationToken variable. Since we treat the CancellationToken
+      // variable as an object, this '0x6F' would be dereference to access the underlying object,
+      // and an invalid memory read would occur and crash the application.
+      //
+      // Currently, all integrations that use System.Threading.CancellationToken (a struct)
+      // have the argument as the last argument in the signature (lucky us!).
+      // For now, we'll do the following:
+      //   1) Get the method signature of the original target method
+      //   2) Read the signature until the final argument type
+      //   3) If the type begins with `ELEMENT_TYPE_VALUETYPE`, uncompress the compressed type token that follows
+      //   4) If the type token represents System.Threading.CancellationToken, emit a 'box <type_token>' IL instruction before calling our wrapper method
+      auto original_method_def = target.id;
+      size_t argument_count = target.signature.NumberOfArguments();
+      size_t return_type_index = target.signature.IndexOfReturnType();
+      PCCOR_SIGNATURE pSigCurrent = PCCOR_SIGNATURE(&target.signature.data[return_type_index]); // index to the location of the return type
+      bool signature_read_success = true;
 
-      // add the additional arguments before calling the wrapper method, in order
+      // iterate until the pointer is pointing at the last argument
+      for (size_t signature_types_index = 0; signature_types_index < argument_count; signature_types_index++) {
+        if (!ParseType(&pSigCurrent)) {
+          signature_read_success = false;
+          break;
+        }
+      }
+
+      // read the last argument type
+      if (signature_read_success && *pSigCurrent == ELEMENT_TYPE_VALUETYPE) {
+        pSigCurrent++;
+        mdToken valuetype_type_token = CorSigUncompressToken(pSigCurrent);
+
+        // Currently, we only expect to see `System.Threading.CancellationToken` as a valuetype in this position
+        // If we expand this to a general case, we would always perform the boxing regardless of type
+        if (GetTypeInfo(module_metadata->metadata_import, valuetype_type_token).name == "System.Threading.CancellationToken"_W) {
+          rewriter_wrapper.Box(valuetype_type_token);
+        }
+      }
+
+      // IL Modification #3: Insert a non-virtual call (CALL) to the instrumentation wrapper.
+      //                     Always use CALL because the wrapper methods are all static.
+      rewriter_wrapper.CallMember(wrapper_method_ref, false);
+      rewriter_wrapper.SetILPosition(pInstr->m_pPrev); // Set ILPosition to method call
+
+      // IL Modification #4: Push the following additional arguments on the evaluation stack in the
+      //                     following order, which all integration wrapper methods expect:
+      //                       1) [int32] original CALL/CALLVIRT opCode
+      //                       2) [int32] mdToken for original method call target
+      //                       3) [int64] pointer to MVID
       rewriter_wrapper.LoadInt32(original_methodcall_opcode);
       rewriter_wrapper.LoadInt32(method_def_md_token);
       rewriter_wrapper.LoadInt64(reinterpret_cast<INT64>(module_version_id_ptr));
 
-      // after the call is made, unbox any valuetypes
+      // IL Modification #5: Conditionally emit an unbox.any instruction on the return value
+      //                     of the wrapper method if we return an object but the original
+      //                     method call returned a valuetype or a generic type.
+      //
+      // This resolves https://github.com/DataDog/dd-trace-dotnet/pull/566, which raised a
+      // System.EntryPointNotFoundException. This occurred because the return type of the
+      // generic method was a generic type that evaluated to a value type at runtime. As a
+      // result, this caller method expected an unboxed representation of the return value,
+      // even though we can only return values of type object. So if we detect that the
+      // expected return type is a valuetype or a generic type, issue an unbox.any
+      // instruction that will unbox it.
       mdToken typeToken;
       if (method_replacement.wrapper_method.method_signature.ReturnTypeIsObject()
           && ReturnTypeIsValueTypeOrGeneric(module_metadata->metadata_import,
@@ -864,8 +986,8 @@ HRESULT CorProfiler::ProcessReplacementCalls(
         rewriter_wrapper.UnboxAnyAfter(typeToken);
       }
 
+      // End IL Modification
       modified = true;
-
       Info("*** JITCompilationStarted() replaced calls from ", caller.type.name,
            ".", caller.name, "() to ",
            method_replacement.target_method.type_name, ".",
@@ -879,7 +1001,11 @@ HRESULT CorProfiler::ProcessReplacementCalls(
 
   if (modified) {
     hr = rewriter.Export();
-    RETURN_OK_IF_FAILED(hr);
+
+    if (FAILED(hr)) {
+      Warn("ProcessReplacementCalls: Call to ILRewriter.Export() failed for ModuleID=", module_id, " ", function_token);
+      return hr;
+    }
   }
 
   return S_OK;
@@ -897,7 +1023,11 @@ HRESULT CorProfiler::ProcessInsertionCalls(
   bool modified = false;
 
   auto hr = rewriter.Import();
-  RETURN_OK_IF_FAILED(hr);
+
+  if (FAILED(hr)) {
+    Warn("ProcessInsertionCalls: Call to ILRewriter.Import() failed for ", module_id, " ", function_token);
+    return hr;
+  }
 
   ILRewriterWrapper rewriter_wrapper(&rewriter);
   ILInstr* firstInstr = rewriter.GetILList()->m_pNext;
@@ -949,7 +1079,11 @@ HRESULT CorProfiler::ProcessInsertionCalls(
 
   if (modified) {
     hr = rewriter.Export();
-    RETURN_IF_FAILED(hr);
+
+    if (FAILED(hr)) {
+      Warn("ProcessInsertionCalls: Call to ILRewriter.Export() failed for ModuleID=", module_id, " ", function_token);
+      return hr;
+    }
   }
 
   return S_OK;
@@ -1030,14 +1164,19 @@ HRESULT CorProfiler::RunILStartupHook(
     const mdToken function_token) {
   mdMethodDef ret_method_token;
   auto hr = GenerateVoidILStartupMethod(module_id, &ret_method_token);
+
   if (FAILED(hr)) {
     Warn("RunILStartupHook: Call to GenerateVoidILStartupMethod failed for ", module_id);
-    return S_OK;
+    return hr;
   }
 
   ILRewriter rewriter(this->info_, nullptr, module_id, function_token);
   hr = rewriter.Import();
-  RETURN_OK_IF_FAILED(hr);
+
+  if (FAILED(hr)) {
+    Warn("RunILStartupHook: Call to ILRewriter.Import() failed for ", module_id, " ", function_token);
+    return hr;
+  }
 
   ILRewriterWrapper rewriter_wrapper(&rewriter);
 
@@ -1046,7 +1185,11 @@ HRESULT CorProfiler::RunILStartupHook(
   rewriter_wrapper.SetILPosition(pInstr);
   rewriter_wrapper.CallMember(ret_method_token, false);
   hr = rewriter.Export();
-  RETURN_OK_IF_FAILED(hr);
+
+  if (FAILED(hr)) {
+    Warn("RunILStartupHook: Call to ILRewriter.Export() failed for ModuleID=", module_id, " ", function_token);
+    return hr;
+  }
 
   return S_OK;
 }
@@ -1617,7 +1760,7 @@ Debug("GenerateVoidILStartupMethod: Linux: Setting the PInvoke native profiler l
 
   hr = rewriter_void.Export();
   if (FAILED(hr)) {
-    Warn("GenerateVoidILStartupMethod: Unable to save the IL body. ModuleID=", module_id);
+    Warn("GenerateVoidILStartupMethod: Call to ILRewriter.Export() failed for ModuleID=", module_id);
     return hr;
   }
 
