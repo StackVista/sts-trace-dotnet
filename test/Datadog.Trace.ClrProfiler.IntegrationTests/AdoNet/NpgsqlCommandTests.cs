@@ -1,3 +1,4 @@
+using Datadog.Core.Tools;
 using Datadog.Trace.TestHelpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,6 +10,7 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AdoNet
         public NpgsqlCommandTests(ITestOutputHelper output)
             : base("Npgsql", output)
         {
+            SetServiceVersion("1.0.0");
         }
 
         [Fact]
@@ -36,6 +38,7 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AdoNet
                     Assert.Equal(expectedServiceName, span.Service);
                     Assert.Equal(SpanTypes.Sql, span.Type);
                     Assert.Equal(dbType, span.Tags[Tags.DbType]);
+                    Assert.False(span.Tags?.ContainsKey(Tags.Version), "External service span should not have service version tag.");
                 }
             }
         }

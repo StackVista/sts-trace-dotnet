@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
+using Datadog.Core.Tools;
 using Datadog.Trace.TestHelpers;
 using Xunit.Abstractions;
 
@@ -11,21 +13,26 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AspNetCore
 {
     public abstract class AspNetCoreMvcTestBase : TestHelper
     {
-        protected static readonly string TopLevelOperationName = "aspnet_core.request";
+        protected const string TopLevelOperationName = "aspnet_core.request";
 
-        protected AspNetCoreMvcTestBase(string sampleAppName, ITestOutputHelper output)
+        protected AspNetCoreMvcTestBase(string sampleAppName, ITestOutputHelper output, string serviceVersion)
             : base(sampleAppName, output)
         {
-            CreateTopLevelExpectation(url: "/", httpMethod: "GET", httpStatus: "200", resourceUrl: "Home/Index");
-            CreateTopLevelExpectation(url: "/delay/0", httpMethod: "GET", httpStatus: "200", resourceUrl: "delay/{seconds}");
-            CreateTopLevelExpectation(url: "/api/delay/0", httpMethod: "GET", httpStatus: "200", resourceUrl: "api/delay/{seconds}");
-            CreateTopLevelExpectation(url: "/not-found", httpMethod: "GET", httpStatus: "404", resourceUrl: "/not-found");
-            CreateTopLevelExpectation(url: "/status-code/203", httpMethod: "GET", httpStatus: "203", resourceUrl: "status-code/{statusCode}");
+            ServiceVersion = serviceVersion;
+            SetServiceVersion(ServiceVersion);
+
+            CreateTopLevelExpectation(url: "/", httpMethod: "GET", httpStatus: "200", resourceUrl: "Home/Index", serviceVersion: ServiceVersion);
+            CreateTopLevelExpectation(url: "/delay/0", httpMethod: "GET", httpStatus: "200", resourceUrl: "delay/{seconds}", serviceVersion: ServiceVersion);
+            CreateTopLevelExpectation(url: "/api/delay/0", httpMethod: "GET", httpStatus: "200", resourceUrl: "api/delay/{seconds}", serviceVersion: ServiceVersion);
+            CreateTopLevelExpectation(url: "/not-found", httpMethod: "GET", httpStatus: "404", resourceUrl: "/not-found", serviceVersion: ServiceVersion);
+            CreateTopLevelExpectation(url: "/status-code/203", httpMethod: "GET", httpStatus: "203", resourceUrl: "status-code/{statusCode}", serviceVersion: ServiceVersion);
+
             CreateTopLevelExpectation(
                 url: "/bad-request",
                 httpMethod: "GET",
                 httpStatus: "500",
                 resourceUrl: "bad-request",
+                serviceVersion: ServiceVersion,
                 additionalCheck: span =>
                 {
                     var failures = new List<string>();
@@ -51,11 +58,13 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AspNetCore
                 });
         }
 
+        public string ServiceVersion { get; }
+
         protected HttpClient HttpClient { get; } = new HttpClient();
 
         protected List<AspNetCoreMvcSpanExpectation> Expectations { get; set; } = new List<AspNetCoreMvcSpanExpectation>();
 
-        public void RunTraceTestOnSelfHosted(string packageVersion)
+        public async Task RunTraceTestOnSelfHosted(string packageVersion)
         {
             var agentPort = TcpPortProvider.GetOpenPort();
             var aspNetCorePort = TcpPortProvider.GetOpenPort();
@@ -103,7 +112,7 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AspNetCore
                 {
                     try
                     {
-                        serverReady = SubmitRequest(aspNetCorePort, "/alive-check") == HttpStatusCode.OK;
+                        serverReady = await SubmitRequest(aspNetCorePort, "/alive-check") == HttpStatusCode.OK;
                     }
                     catch
                     {
@@ -126,7 +135,7 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AspNetCore
                 var testStart = DateTime.Now;
 
                 var paths = Expectations.Select(e => e.OriginalUri).ToArray();
-                SubmitRequests(aspNetCorePort, paths);
+                await SubmitRequests(aspNetCorePort, paths);
 
                 var spans =
                     agent.WaitForSpans(
@@ -150,31 +159,39 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests.AspNetCore
             string httpMethod,
             string httpStatus,
             string resourceUrl,
+            string serviceVersion,
             Func<MockTracerAgent.Span, List<string>> additionalCheck = null)
         {
             var resourceName = $"{httpMethod.ToUpper()} {resourceUrl}";
-            var expectation = new AspNetCoreMvcSpanExpectation(EnvironmentHelper.FullSampleName, TopLevelOperationName, resourceName, httpStatus, httpMethod)
-            {
-                OriginalUri = url,
-            };
+
+            var expectation = new AspNetCoreMvcSpanExpectation(
+                                  EnvironmentHelper.FullSampleName,
+                                  serviceVersion,
+                                  TopLevelOperationName,
+                                  resourceName,
+                                  httpStatus,
+                                  httpMethod)
+                              {
+                                  OriginalUri = url,
+                              };
 
             expectation.RegisterDelegateExpectation(additionalCheck);
 
             Expectations.Add(expectation);
         }
 
-        protected void SubmitRequests(int aspNetCorePort, string[] paths)
+        protected async Task SubmitRequests(int aspNetCorePort, string[] paths)
         {
             foreach (var path in paths)
             {
-                SubmitRequest(aspNetCorePort, path);
+                await SubmitRequest(aspNetCorePort, path);
             }
         }
 
-        protected HttpStatusCode SubmitRequest(int aspNetCorePort, string path)
+        protected async Task<HttpStatusCode> SubmitRequest(int aspNetCorePort, string path)
         {
-            HttpResponseMessage response = HttpClient.GetAsync($"http://localhost:{aspNetCorePort}{path}").Result;
-            string responseText = response.Content.ReadAsStringAsync().Result;
+            HttpResponseMessage response = await HttpClient.GetAsync($"http://localhost:{aspNetCorePort}{path}");
+            string responseText = await response.Content.ReadAsStringAsync();
             Output.WriteLine($"[http] {response.StatusCode} {responseText}");
             return response.StatusCode;
         }

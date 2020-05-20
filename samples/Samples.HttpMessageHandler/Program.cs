@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Datadog.Trace;
+using Datadog.Core.Tools;
 
 namespace Samples.HttpMessageHandler
 {
@@ -15,6 +15,7 @@ namespace Samples.HttpMessageHandler
         private const string RequestContent = "PING";
         private const string ResponseContent = "PONG";
         private static readonly Encoding Utf8 = Encoding.UTF8;
+        private static Thread listenerThread;
 
         private static string Url;
 
@@ -35,19 +36,10 @@ namespace Samples.HttpMessageHandler
             string port = args.FirstOrDefault(arg => arg.StartsWith("Port="))?.Split('=')[1] ?? "9000";
             Console.WriteLine($"Port {port}");
 
-            Url = $"http://localhost:{port}/Samples.HttpMessageHandler/";
-
-            Console.WriteLine();
-            Console.WriteLine($"Starting HTTP listener at {Url}");
-
-            using (var listener = new HttpListener())
+            using (var listener = StartHttpListenerWithPortResilience(port))
             {
-                listener.Prefixes.Add(Url);
-                listener.Start();
-
-                // handle http requests in a background thread
-                var listenerThread = new Thread(HandleHttpRequests);
-                listenerThread.Start(listener);
+                Console.WriteLine();
+                Console.WriteLine($"Starting HTTP listener at {Url}");
 
                 if (args.Length == 0 || args.Any(arg => arg.Equals("HttpClient", StringComparison.OrdinalIgnoreCase)))
                 {
@@ -76,11 +68,42 @@ namespace Samples.HttpMessageHandler
             Environment.Exit(0);
         }
 
+        public static HttpListener StartHttpListenerWithPortResilience(string port, int retries = 5)
+        {
+            // try up to 5 consecutive ports before giving up
+            while (true)
+            {
+                Url = $"http://localhost:{port}/Samples.HttpMessageHandler/";
+
+                // seems like we can't reuse a listener if it fails to start,
+                // so create a new listener each time we retry
+                var listener = new HttpListener();
+                listener.Prefixes.Add(Url);
+
+                try
+                {
+                    listener.Start();
+
+                    listenerThread = new Thread(HandleHttpRequests);
+                    listenerThread.Start(listener);
+
+                    return listener;
+                }
+                catch (HttpListenerException) when (retries > 0)
+                {
+                    // only catch the exception if there are retries left
+                    port = TcpPortProvider.GetOpenPort().ToString();
+                    retries--;
+                }
+
+                // always close listener if exception is thrown,
+                // whether it was caught or not
+                listener.Close();
+            }
+        }
+
         private static async Task SendHttpClientRequestAsync(bool tracingDisabled)
         {
-            // Insert a call to the Tracer.Instance to include an AssemblyRef to Datadog.Trace assembly in the final executable
-            var ins = Tracer.Instance;
-
             Console.WriteLine($"[HttpClient] sending request to {Url}");
             var clientRequestContent = new StringContent(RequestContent, Utf8);
 
@@ -88,7 +111,7 @@ namespace Samples.HttpMessageHandler
             {
                 if (tracingDisabled)
                 {
-                    client.DefaultRequestHeaders.Add(HttpHeaderNames.TracingEnabled, "false");
+                    client.DefaultRequestHeaders.Add("x-datadog-tracing-enabled", "false");
                 }
 
                 using (var responseMessage = await client.PostAsync(Url, clientRequestContent))
@@ -105,6 +128,30 @@ namespace Samples.HttpMessageHandler
                     }
                 }
             }
+
+#if NETCOREAPP
+            using (var client = new HttpClient(new SocketsHttpHandler()))
+            {
+                if (tracingDisabled)
+                {
+                    client.DefaultRequestHeaders.Add("x-datadog-tracing-enabled", "false");
+                }
+
+                using (var responseMessage = await client.PostAsync(Url, clientRequestContent))
+                {
+                    // read response content and headers
+                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                    Console.WriteLine($"[HttpClient] response content: {responseContent}");
+
+                    foreach (var header in responseMessage.Headers)
+                    {
+                        var name = header.Key;
+                        var values = string.Join(",", header.Value);
+                        Console.WriteLine($"[HttpClient] response header: {name}={values}");
+                    }
+                }
+            }
+#endif
         }
 
         private static void SendWebClientRequest(bool tracingDisabled)
@@ -117,7 +164,7 @@ namespace Samples.HttpMessageHandler
 
                 if (tracingDisabled)
                 {
-                    webClient.Headers.Add(HttpHeaderNames.TracingEnabled, "false");
+                    webClient.Headers.Add("x-datadog-tracing-enabled", "false");
                 }
 
                 var responseContent = webClient.DownloadString(Url);

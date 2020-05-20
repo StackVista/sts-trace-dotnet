@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using Datadog.Trace.Agent.MessagePack;
 using Datadog.Trace.DogStatsd;
 using Datadog.Trace.Logging;
 using Datadog.Trace.PlatformHelpers;
 using Datadog.Trace.Vendors.StatsdClient;
-using MsgPack.Serialization;
 using Newtonsoft.Json;
 
 namespace Datadog.Trace.Agent
@@ -16,23 +17,11 @@ namespace Datadog.Trace.Agent
         private const string TracesPath = "/v0.4/traces";
 
         private static readonly Vendors.Serilog.ILogger Log = DatadogLogging.For<Api>();
-        private static readonly SerializationContext SerializationContext = new SerializationContext();
-        private static readonly SpanMessagePackSerializer Serializer = new SpanMessagePackSerializer(SerializationContext);
 
         private readonly HttpClient _client;
         private readonly IStatsd _statsd;
         private readonly Uri _tracesEndpoint;
-
-        static Api()
-        {
-            SerializationContext.ResolveSerializer += (sender, eventArgs) =>
-            {
-                if (eventArgs.TargetType == typeof(Span))
-                {
-                    eventArgs.SetSerializer(Serializer);
-                }
-            };
-        }
+        private readonly FormatterResolverWrapper _formatterResolver = new FormatterResolverWrapper(SpanFormatterResolver.Instance);
 
         public Api(Uri baseEndpoint, DelegatingHandler delegatingHandler, IStatsd statsd)
         {
@@ -40,9 +29,7 @@ namespace Datadog.Trace.Agent
 
             _tracesEndpoint = new Uri(baseEndpoint, TracesPath);
             _statsd = statsd;
-            _client = delegatingHandler == null
-                          ? new HttpClient()
-                          : new HttpClient(delegatingHandler);
+            _client = delegatingHandler == null ? new HttpClient() : new HttpClient(delegatingHandler);
             _client.DefaultRequestHeaders.Add(AgentHttpHeaderNames.Language, ".NET");
 
             // report runtime details
@@ -52,6 +39,7 @@ namespace Datadog.Trace.Agent
 
                 if (frameworkDescription != null)
                 {
+                    Log.Information(frameworkDescription.ToString());
                     _client.DefaultRequestHeaders.Add(AgentHttpHeaderNames.LanguageInterpreter, frameworkDescription.Name);
                     _client.DefaultRequestHeaders.Add(AgentHttpHeaderNames.LanguageVersion, frameworkDescription.ProductVersion);
                 }
@@ -82,6 +70,7 @@ namespace Datadog.Trace.Agent
             var retryLimit = 5;
             var retryCount = 1;
             var sleepDuration = 100; // in milliseconds
+            var traceIds = GetUniqueTraceIds(traces);
 
             while (true)
             {
@@ -89,10 +78,8 @@ namespace Datadog.Trace.Agent
 
                 try
                 {
-                    var traceIds = GetUniqueTraceIds(traces);
-
-                    // re-create content on every retry because some versions of HttpClient always dispose of it, so we can't reuse.
-                    using (var content = new MsgPackContent<Span[][]>(traces, SerializationContext))
+                    // re-create HttpContent on every retry because some versions of HttpClient always dispose of it, so we can't reuse.
+                    using (var content = new TracesMessagePackContent(traces, _formatterResolver))
                     {
                         content.Headers.Add(AgentHttpHeaderNames.TraceCount, traceIds.Count.ToString());
 
@@ -131,6 +118,14 @@ namespace Datadog.Trace.Agent
                         return;
                     }
 #endif
+                    var isSocketException = false;
+                    if (ex.InnerException is SocketException se)
+                    {
+                        isSocketException = true;
+                        Log.Error(se, "Unable to communicate with the trace agent at {Endpoint}", _tracesEndpoint);
+                        TracingProcessManager.TryForceTraceAgentRefresh();
+                    }
+
                     if (retryCount >= retryLimit)
                     {
                         // stop retrying
@@ -142,7 +137,13 @@ namespace Datadog.Trace.Agent
                     await Task.Delay(sleepDuration).ConfigureAwait(false);
                     retryCount++;
                     sleepDuration *= 2;
-                    TracingProcessManager.TraceAgentMetadata.ForcePortFileRead();
+
+                    if (isSocketException)
+                    {
+                        // Ensure we have the most recent port before trying again
+                        TracingProcessManager.TraceAgentMetadata.ForcePortFileRead();
+                    }
+
                     continue;
                 }
 
