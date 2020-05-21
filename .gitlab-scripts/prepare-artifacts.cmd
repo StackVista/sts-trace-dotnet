@@ -9,4 +9,4 @@ xcopy deploy\Datadog.Trace.ClrProfiler.WindowsInstaller\bin\Release\x64\* OUTCOM
 xcopy deploy\Datadog.Trace.ClrProfiler.WindowsInstaller\bin\Release\x86\* OUTCOME\WindowsInstaller\X86 /s /e
 xcopy src\Datadog.Trace\bin\* OUTCOME\Nupkg /s /e
 xcopy src\Datadog.Trace.OpenTracing\bin\* OUTCOME\OpenNupkg /s /e
-xcopy src\bin\windows-tracer-home.zip OUTCOME\
+xcopy src\bin\tracer-home.zip OUTCOME\
