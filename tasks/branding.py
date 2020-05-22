@@ -419,8 +419,8 @@ def apply_branding(ctx):
     do_file_replace(
         ctx,
         "test/Datadog.Trace.TestHelpers/EnvironmentHelper.cs",
-        "Datadog.Trace",
-        "StackVista.Trace"
+        "Datadog.Trace.ClrProfiler.Native",
+        "StackVista.Trace.ClrProfiler.Native"
         )
 
 # tools/PrepareRelease/SetAllVersions.cs
