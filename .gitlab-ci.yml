@@ -26,6 +26,21 @@ build-native:
   tags:
     - windows
 
+build-branded:
+  stage: build
+  script:
+   - echo %CI_PROJECT_DIR%
+   - inv apply-branding
+   - call .gitlab-scripts/build-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
+
+
 test-native:
   stage: test
   needs:
