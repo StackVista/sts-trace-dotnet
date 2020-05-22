@@ -332,26 +332,26 @@ def apply_branding(ctx):
     do_file_replace(
         ctx,
         "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.DLL.vcxproj",
-        "Datadog.Trace.AspNet",
-        "StackVista.Trace.AspNet"
+        "<TargetName>Datadog.Trace.AspNet",
+        "<TargetName>StackVista.Trace.AspNet"
         )
     do_file_replace(
         ctx,
         "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.DLL.vcxproj",
-        "Datadog.Trace.ClrProfiler.Managed.Core",
-        "StackVista.Trace.ClrProfiler.Managed.Core"
+        "<TargetName>Datadog.Trace.ClrProfiler.Managed.Core",
+        "<TargetName>StackVista.Trace.ClrProfiler.Managed.Core"
         )        
     do_file_replace(
         ctx,
         "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.DLL.vcxproj",
-        "Datadog.Trace.ClrProfiler.Managed",
-        "StackVista.Trace.ClrProfiler.Managed"
+        "<TargetName>Datadog.Trace.ClrProfiler.Managed",
+        "<TargetName>StackVista.Trace.ClrProfiler.Managed"
         )        
     do_file_replace(
         ctx,
         "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.DLL.vcxproj",
-        "Datadog.Trace",
-        "StackVista.Trace"
+        "<TargetName>Datadog.Trace",
+        "<TargetName>StackVista.Trace"
         )        
 
 # src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def
