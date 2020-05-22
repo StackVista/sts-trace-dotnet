@@ -8,6 +8,7 @@ import platform
 import re
 import sys
 import json
+import io
 from subprocess import check_output
 
 import invoke
@@ -105,3 +106,9 @@ def do_sed_rename(ctx, rename, at):
 def do_sed_rename_quoted(ctx, rename, at):
     print ("sed -i \"{}\" {}".format(rename, at)) 
     ctx.run("sed -i \"{}\" {}".format(rename, at))
+
+def do_file_replace(ctx, filename, source_string, target_string):
+    file_content = io.open(filename, mode="r+",encoding="utf-8")
+    lines = file_content.read().replace(source_string, target_string)
+    file_content.seek(0)
+    file_content.write(lines)
