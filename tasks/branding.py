@@ -86,16 +86,14 @@ def apply_branding(ctx):
     do_file_replace(
         ctx,
         "src/Directory.Build.props",
-        "<!-- NuGet -->",
+        "</project>",
         """
-
-	  <PropertyGroup>
+       <!-- sts-property-group -->
+       <PropertyGroup>
           <AssemblyName>$(MSBuildProjectName.Replace("Datadog.", "StackVista."))</AssemblyName>
           <PackageId>$(MSBuildProjectName.Replace("Datadog.", "StackVista."))</PackageId>
-      </PropertyGroup>
-
-      <ItemGroup>
-        <!-- NuGet -->
+       </PropertyGroup>
+       </project>
         """
         )
 
