@@ -73,3 +73,19 @@ publish-native:
     - OUTCOME
   tags:
     - windows
+
+publish-branded:
+  stage: package
+  needs:
+    - build-native
+  script:
+   - inv apply-branding
+   - call .gitlab-scripts/package-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+   - call .gitlab-scripts/prepare-release-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
