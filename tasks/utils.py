@@ -112,3 +112,35 @@ def do_file_replace(ctx, filename, source_string, target_string):
     lines = file_content.read().replace(source_string, target_string)
     file_content.seek(0)
     file_content.write(lines)
+
+def do_dll_replace(ctx, filename):
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.AspNet.dll",
+        "StackVista.Trace.AspNet.dll"
+        )
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
+        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
+        )        
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.ClrProfiler.Managed.dll",
+        "StackVista.Trace.ClrProfiler.Managed.dll"
+        )        
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.dll",
+        "StackVista.Trace.dll"
+        )
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.ClrProfiler.Native.dll",
+        "StackVista.Trace.ClrProfiler.Native.dll"
+        )

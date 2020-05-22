@@ -13,7 +13,7 @@ import invoke
 from invoke import task
 from invoke.exceptions import Exit
 
-from .utils import do_sed_rename, do_sed_rename_quoted, do_file_replace
+from .utils import do_sed_rename, do_sed_rename_quoted, do_file_replace, do_dll_replace
 
 # constants
 
@@ -148,161 +148,22 @@ def apply_branding(ctx):
         )
 
 # deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.GAC.wxs
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.GAC.wxs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.GAC.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.GAC.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.GAC.wxs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.GAC.wxs")
 
 # deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.wxs
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.wxs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.wxs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net45.wxs")
 
 # deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net461.wxs
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net461.wxs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net461.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net461.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net461.wxs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.Net461.wxs")
 
 # deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.NetStandard20.wxs
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.NetStandard20.wxs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.NetStandard20.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.NetStandard20.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.NetStandard20.wxs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Files.Managed.NetStandard20.wxs")
 
 # deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Product.wxs
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Product.wxs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Product.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Product.wxs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Product.wxs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/Product.wxs")
 
 # docker/Datadog.Trace.ClrProfiler.IntegrationTests.sh
-
-    do_file_replace(
-        ctx,
-        "docker/Datadog.Trace.ClrProfiler.IntegrationTests.sh",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "docker/Datadog.Trace.ClrProfiler.IntegrationTests.sh",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "docker/Datadog.Trace.ClrProfiler.IntegrationTests.sh",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "docker/Datadog.Trace.ClrProfiler.IntegrationTests.sh",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "docker/Datadog.Trace.ClrProfiler.IntegrationTests.sh")
 
 # integrations.json
 
@@ -338,981 +199,115 @@ def apply_branding(ctx):
         )        
 
 # performance/Performance.StackExchange.Redis/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "performance/Performance.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "performance/Performance.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "performance/Performance.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "performance/Performance.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "performance/Performance.StackExchange.Redis/Properties/launchSettings.json")
 
 # reproduction-dependencies/AppDomain.Instance/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproduction-dependencies/AppDomain.Instance/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproduction-dependencies/AppDomain.Instance/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproduction-dependencies/AppDomain.Instance/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproduction-dependencies/AppDomain.Instance/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproduction-dependencies/AppDomain.Instance/Properties/launchSettings.json")
 
 # reproductions/AssemblyLoad.FileNotFoundException/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyLoad.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyLoad.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyLoad.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyLoad.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/AssemblyLoad.FileNotFoundException/Properties/launchSettings.json")
 
 # reproductions/AssemblyResolveMscorlibResources.InfiniteRecursionCrash/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyResolveMscorlibResources.InfiniteRecursionCrash/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyResolveMscorlibResources.InfiniteRecursionCrash/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyResolveMscorlibResources.InfiniteRecursionCrash/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/AssemblyResolveMscorlibResources.InfiniteRecursionCrash/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/AssemblyResolveMscorlibResources.InfiniteRecursionCrash/Properties/launchSettings.json")
 
 # reproductions/AutomapperTest/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/AutomapperTest/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/AutomapperTest/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/AutomapperTest/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/AutomapperTest/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/AutomapperTest/Properties/launchSettings.json")
 
 # reproductions/HttpMessageHandler.StackOverflowException/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/HttpMessageHandler.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/HttpMessageHandler.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/HttpMessageHandler.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/HttpMessageHandler.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/HttpMessageHandler.StackOverflowException/Properties/launchSettings.json")
 
 # reproductions/OrleansCrash/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/OrleansCrash/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/OrleansCrash/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/OrleansCrash/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/OrleansCrash/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/OrleansCrash/Properties/launchSettings.json")
 
 # reproductions/SecurityGrant.FileNotFoundException/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/SecurityGrant.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/SecurityGrant.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/SecurityGrant.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/SecurityGrant.FileNotFoundException/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/SecurityGrant.FileNotFoundException/Properties/launchSettings.json")
 
 # reproductions/StackExchange.Redis.AssemblyConflict.LegacyProject/Program.cs
-
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.LegacyProject/Program.cs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.LegacyProject/Program.cs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.LegacyProject/Program.cs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.LegacyProject/Program.cs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/StackExchange.Redis.AssemblyConflict.LegacyProject/Program.cs")
 
 # reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Program.cs
-
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Program.cs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Program.cs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Program.cs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Program.cs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Program.cs")
 
 # reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/StackExchange.Redis.AssemblyConflict.SdkProject/Properties/launchSettings.json")
 
 # reproductions/StackExchange.Redis.StackOverflowException/Properties/launchSettings.json
-
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "reproductions/StackExchange.Redis.StackOverflowException/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "reproductions/StackExchange.Redis.StackOverflowException/Properties/launchSettings.json")
 
 # samples-aspnet/Samples.AspNetMvc4/Views/Home/Index.cshtml
-
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc4/Views/Home/Index.cshtml",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc4/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc4/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc4/Views/Home/Index.cshtml",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples-aspnet/Samples.AspNetMvc4/Views/Home/Index.cshtml")
 
 # samples-aspnet/Samples.AspNetMvc5/Views/Home/Index.cshtml
-
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5/Views/Home/Index.cshtml",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5/Views/Home/Index.cshtml",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples-aspnet/Samples.AspNetMvc5/Views/Home/Index.cshtml")
 
 # samples-aspnet/Samples.AspNetMvc5_0/Views/Home/Index.cshtml
-
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5_0/Views/Home/Index.cshtml",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5_0/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5_0/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.AspNetMvc5_0/Views/Home/Index.cshtml",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples-aspnet/Samples.AspNetMvc5_0/Views/Home/Index.cshtml")
 
 # samples-aspnet/Samples.WebForms.Empty/App_Code/Profiler.cs
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.WebForms.Empty/App_Code/Profiler.cs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.WebForms.Empty/App_Code/Profiler.cs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.WebForms.Empty/App_Code/Profiler.cs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples-aspnet/Samples.WebForms.Empty/App_Code/Profiler.cs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples-aspnet/Samples.WebForms.Empty/App_Code/Profiler.cs")
 
 # samples/Samples.AspNetCoreMvc21/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.AspNetCoreMvc21/Properties/launchSettings.json")
 
 # samples/Samples.AspNetCoreMvc21/Views/Home/Index.cshtml
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Views/Home/Index.cshtml",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Views/Home/Index.cshtml",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc21/Views/Home/Index.cshtml",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.AspNetCoreMvc21/Views/Home/Index.cshtml")
 
 # samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json")
 
 # samples/Samples.AspNetCoreMvc31/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc31/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc31/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc31/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.AspNetCoreMvc31/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.AspNetCoreMvc30/Properties/launchSettings.json")
 
 # samples/Samples.Dapper/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.Dapper/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.Dapper/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Dapper/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Dapper/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.Dapper/Properties/launchSettings.json")
 
 # samples/Samples.Elasticsearch.MultipleAppDomains/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.MultipleAppDomains/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.MultipleAppDomains/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.MultipleAppDomains/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.MultipleAppDomains/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.Elasticsearch.MultipleAppDomains/Properties/launchSettings.json")
 
 # samples/Samples.Elasticsearch.V5/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.V5/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.V5/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.V5/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch.V5/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.Elasticsearch.V5/Properties/launchSettings.json")
 
 # samples/Samples.Elasticsearch/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Elasticsearch/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.Elasticsearch/Properties/launchSettings.json")
 
 # samples/Samples.FakeAzureAppServices/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeAzureAppServices/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeAzureAppServices/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeAzureAppServices/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeAzureAppServices/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.FakeAzureAppServices/Properties/launchSettings.json")
 
 # samples/Samples.FakeKudu/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeKudu/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeKudu/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeKudu/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.FakeKudu/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.FakeKudu/Properties/launchSettings.json")
 
 # samples/Samples.GraphQL/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.GraphQL/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.GraphQL/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.GraphQL/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.GraphQL/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.GraphQL/Properties/launchSettings.json")
 
 # samples/Samples.HttpMessageHandler/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.HttpMessageHandler/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.HttpMessageHandler/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.HttpMessageHandler/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.HttpMessageHandler/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.HttpMessageHandler/Properties/launchSettings.json")
 
 # samples/Samples.MongoDB/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.MongoDB/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.MongoDB/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.MongoDB/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.MongoDB/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.MongoDB/Properties/launchSettings.json")
 
 # samples/Samples.MySql/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.MySql/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.MySql/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.MySql/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.MySql/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.MySql/Properties/launchSettings.json")
 
 # samples/Samples.Npgsql/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.Npgsql/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.Npgsql/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Npgsql/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Npgsql/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.Npgsql/Properties/launchSettings.json")
 
 # samples/Samples.RateLimiter/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.RateLimiter/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.RateLimiter/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.RateLimiter/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.RateLimiter/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.RateLimiter/Properties/launchSettings.json")
 
 # samples/Samples.ServiceStack.Redis/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.ServiceStack.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.ServiceStack.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.ServiceStack.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.ServiceStack.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.ServiceStack.Redis/Properties/launchSettings.json")
 
 # samples/Samples.SqlServer/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.SqlServer/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.SqlServer/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.SqlServer/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.SqlServer/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.SqlServer/Properties/launchSettings.json")
 
 # samples/Samples.StackExchange.Redis/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.StackExchange.Redis/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.StackExchange.Redis/Properties/launchSettings.json")
 
 # samples/Samples.TracingWithoutLimits/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.TracingWithoutLimits/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.TracingWithoutLimits/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.TracingWithoutLimits/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.TracingWithoutLimits/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.TracingWithoutLimits/Properties/launchSettings.json")
 
 # samples/Samples.Wcf/Properties/launchSettings.json
-    do_file_replace(
-        ctx,
-        "samples/Samples.Wcf/Properties/launchSettings.json",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "samples/Samples.Wcf/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Wcf/Properties/launchSettings.json",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "samples/Samples.Wcf/Properties/launchSettings.json",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "samples/Samples.Wcf/Properties/launchSettings.json")
 
 # src/Datadog.Trace.ClrProfiler.Managed.Core/AssemblyInfo.cs
     do_file_replace(
@@ -1331,30 +326,7 @@ def apply_branding(ctx):
         )
 
 # src/Datadog.Trace.ClrProfiler.Managed/NativeMethods.cs
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Managed/NativeMethods.cs",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Managed/NativeMethods.cs",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Managed/NativeMethods.cs",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Managed/NativeMethods.cs",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "src/Datadog.Trace.ClrProfiler.Managed/NativeMethods.cs")
 
 # src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.DLL.vcxproj
     do_file_replace(
@@ -1383,37 +355,7 @@ def apply_branding(ctx):
         )        
 
 # src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def",
-        "Datadog.Trace.ClrProfiler.Native.dll",
-        "StackVista.Trace.ClrProfiler.Native.dll"
-        )
-
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def",
-        "Datadog.Trace.AspNet.dll",
-        "StackVista.Trace.AspNet.dll"
-        )
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def",
-        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
-        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def",
-        "Datadog.Trace.ClrProfiler.Managed.dll",
-        "StackVista.Trace.ClrProfiler.Managed.dll"
-        )        
-    do_file_replace(
-        ctx,
-        "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def",
-        "Datadog.Trace.dll",
-        "StackVista.Trace.dll"
-        )        
+    do_dll_replace(ctx, "src/Datadog.Trace.ClrProfiler.Native/Datadog.Trace.ClrProfiler.Native.def")
 
 # src/Datadog.Trace.ClrProfiler.Native/Resource.rc
     do_file_replace(
