@@ -170,33 +170,32 @@ def apply_branding(ctx):
     do_file_replace(
         ctx,
         "integrations.json",
-        "Datadog.Trace.AspNet",
-        "StackVista.Trace.AspNet"
+        "\"assembly\": \"Datadog.Trace",
+        "\"assembly\": \"StackVista.Trace"
         )
-    do_file_replace(
-        ctx,
-        "integrations.json",
-        "Datadog.Trace.ClrProfiler.Managed.Core",
-        "StackVista.Trace.ClrProfiler.Managed.Core"
-        )        
-    do_file_replace(
-        ctx,
-        "integrations.json",
-        "Datadog.Trace.ClrProfiler.Managed",
-        "StackVista.Trace.ClrProfiler.Managed"
-        )        
-    do_file_replace(
-        ctx,
-        "integrations.json",
-        "Datadog.Trace",
-        "StackVista.Trace"
-        )        
     do_file_replace(
         ctx,
         "integrations.json",
         "def86d061d0d2eeb",
         "6b12922542db680e"
-        )        
+        )
+
+# deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/install.cmd
+    do_file_replace(
+        ctx,
+        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/install.cmd",
+        "[name='DatadogTracingModule',type='Datadog.Trace.AspNet.TracingHttpModule,Datadog.Trace.AspNet,Version=1.0.0.0,Culture=neutral,PublicKeyToken=def86d061d0d2eeb']",
+        "[name='StackVistaTracingModule',type='Datadog.Trace.AspNet.TracingHttpModule,StackVista.Trace.AspNet,Version=1.0.0.0,Culture=neutral,PublicKeyToken=6b12922542db680e']"
+        )
+
+# deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/uninstall.cmd
+    do_file_replace(
+        ctx,
+        "deploy/Datadog.Trace.ClrProfiler.WindowsInstaller/uninstall.cmd",
+        "[name='DatadogTracingModule']",
+        "[name='StackVistaTracingModule']"
+        )
+
 
 # performance/Performance.StackExchange.Redis/Properties/launchSettings.json
     do_dll_replace(ctx, "performance/Performance.StackExchange.Redis/Properties/launchSettings.json")
