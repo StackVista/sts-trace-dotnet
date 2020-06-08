@@ -220,10 +220,10 @@ namespace Datadog.Trace
         /// StackState enriched - starttime of the calling process
         /// </summary>
         public const string StsStartTime = "span.starttime";
+
         /// <summary>
         /// StackState enriched - traceclient from which the span originated from
         /// </summary>
         public const string StsOrigin = "span.origin";
-
     }
 }
