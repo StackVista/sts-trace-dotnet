@@ -347,7 +347,7 @@ namespace Datadog.Trace
 
             if (!Settings.GlobalTags.ContainsKey(Tags.StsOrigin))
             {
-                Settings.GlobalTags.Add(Tags.StsOrigin, "dotnet-trace-client");
+                Settings.GlobalTags.Add(Tags.StsOrigin, "dotnet-traceclient");
             }
 
             if (!Settings.GlobalTags.ContainsKey(Tags.StsHostname) && !string.IsNullOrEmpty(Environment.MachineName))
