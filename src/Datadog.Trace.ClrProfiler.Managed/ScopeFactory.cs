@@ -50,7 +50,8 @@ namespace Datadog.Trace.ClrProfiler
                     return null;
                 }
 
-                scope = tracer.StartActive(OperationName, serviceName: $"{tracer.DefaultServiceName}-{ServiceName}");
+                // sts-patch -{ServiceName}
+                scope = tracer.StartActive(OperationName, serviceName: $"{tracer.DefaultServiceName}");
                 var span = scope.Span;
 
                 span.Type = SpanTypes.Http;

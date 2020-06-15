@@ -333,21 +333,26 @@ namespace Datadog.Trace
 
             var processStartTime = currentProcessInfo.StartTime;
 
-            if (!Settings.GlobalTags.ContainsKey("span.starttime"))
+            if (!Settings.GlobalTags.ContainsKey(Tags.StsStartTime))
             {
                 TimeSpan processStartTimeSpan = (processStartTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
                 var startTimeMilliseconds = Convert.ToUInt64(Math.Truncate(processStartTimeSpan.TotalMilliseconds));
-                Settings.GlobalTags.Add("span.starttime", startTimeMilliseconds.ToString());
+                Settings.GlobalTags.Add(Tags.StsStartTime, startTimeMilliseconds.ToString());
             }
 
-            if (!Settings.GlobalTags.ContainsKey("span.pid"))
+            if (!Settings.GlobalTags.ContainsKey(Tags.StsPid))
             {
-                Settings.GlobalTags.Add("span.pid", currentProcessInfo.Id.ToString());
+                Settings.GlobalTags.Add(Tags.StsPid, currentProcessInfo.Id.ToString());
             }
 
-            if (!Settings.GlobalTags.ContainsKey("span.hostname") && !string.IsNullOrEmpty(Environment.MachineName))
+            if (!Settings.GlobalTags.ContainsKey(Tags.StsOrigin))
             {
-                Settings.GlobalTags.Add("span.hostname", Environment.MachineName);
+                Settings.GlobalTags.Add(Tags.StsOrigin, "dotnet-traceclient");
+            }
+
+            if (!Settings.GlobalTags.ContainsKey(Tags.StsHostname) && !string.IsNullOrEmpty(Environment.MachineName))
+            {
+                Settings.GlobalTags.Add(Tags.StsHostname, Environment.MachineName);
             }
 
             // /stspatch

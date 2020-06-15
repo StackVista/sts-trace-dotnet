@@ -8,6 +8,7 @@ import platform
 import re
 import sys
 import json
+import io
 from subprocess import check_output
 
 import invoke
@@ -105,3 +106,43 @@ def do_sed_rename(ctx, rename, at):
 def do_sed_rename_quoted(ctx, rename, at):
     print ("sed -i \"{}\" {}".format(rename, at)) 
     ctx.run("sed -i \"{}\" {}".format(rename, at))
+
+def do_file_replace(ctx, filename, source_string, target_string):
+    print ("Processing string replace in {0}".format(filename))
+    file_content = io.open(filename, mode="r+",encoding="utf-8")
+    lines = file_content.read().replace(source_string, target_string)
+    file_content.seek(0)
+    file_content.write(lines)
+
+def do_dll_replace(ctx, filename):
+    print ("Processing dll replace in {0}".format(filename))
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.AspNet.dll",
+        "StackVista.Trace.AspNet.dll"
+        )
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.ClrProfiler.Managed.Core.dll",
+        "StackVista.Trace.ClrProfiler.Managed.Core.dll"
+        )        
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.ClrProfiler.Managed.dll",
+        "StackVista.Trace.ClrProfiler.Managed.dll"
+        )        
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.dll",
+        "StackVista.Trace.dll"
+        )
+    do_file_replace(
+        ctx,
+        filename,
+        "Datadog.Trace.ClrProfiler.Native.dll",
+        "StackVista.Trace.ClrProfiler.Native.dll"
+        )

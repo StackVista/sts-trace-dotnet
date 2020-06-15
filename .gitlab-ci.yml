@@ -26,6 +26,21 @@ build-native:
   tags:
     - windows
 
+build-branded:
+  stage: build
+  script:
+   - echo %CI_PROJECT_DIR%
+   - inv apply-branding
+   - call .gitlab-scripts/build-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
+
+
 test-native:
   stage: test
   needs:
@@ -49,6 +64,22 @@ publish-native:
   needs:
     - build-native
   script:
+   - call .gitlab-scripts/package-projects-native.cmd
+   - call .gitlab-scripts/prepare-artifacts.cmd
+   - call .gitlab-scripts/prepare-release-artifacts.cmd
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - OUTCOME
+  tags:
+    - windows
+
+publish-branded:
+  stage: package
+  needs:
+    - build-native
+  script:
+   - inv apply-branding
    - call .gitlab-scripts/package-projects-native.cmd
    - call .gitlab-scripts/prepare-artifacts.cmd
    - call .gitlab-scripts/prepare-release-artifacts.cmd
